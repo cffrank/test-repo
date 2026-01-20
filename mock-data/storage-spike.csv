@@ -1,0 +1,6 @@
+Service,Amount,Date,AccountID,Region
+AmazonS3,5000.00,2023-10-15,112233445566,eu-central-1
+AmazonEC2,50.00,2023-10-15,112233445566,eu-central-1
+AmazonRDS,30.00,2023-10-15,112233445566,eu-central-1
+AmazonS3,5100.00,2023-10-16,112233445566,eu-central-1
+AmazonGlacier,200.00,2023-10-16,112233445566,eu-central-1

@@ -1,0 +1,39 @@
+[debug] [2025-12-11T04:07:49.291Z] ----------------------------------------------------------------------
+[debug] [2025-12-11T04:07:49.299Z] Command:       /home/carl-f-frank/.nvm/versions/node/v25.2.1/bin/node /home/carl-f-frank/.gemini/antigravity/scratch/finops-saas-mvp/node_modules/.bin/firebase deploy --project finops-saas-mvp
+[debug] [2025-12-11T04:07:49.300Z] CLI Version:   15.0.0
+[debug] [2025-12-11T04:07:49.300Z] Platform:      linux
+[debug] [2025-12-11T04:07:49.304Z] Node Version:  v25.2.1
+[debug] [2025-12-11T04:07:49.304Z] Time:          Wed Dec 10 2025 22:07:49 GMT-0600 (Central Standard Time)
+[debug] [2025-12-11T04:07:49.304Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-12-11T04:07:51.452Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-12-11T04:07:51.452Z] > authorizing via signed-in user (carl.f.frank@pm.me)
+[debug] [2025-12-11T04:07:51.452Z] [iam] checking project finops-saas-mvp for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2025-12-11T04:07:51.453Z] Checked if tokens are valid: false, expires at: 1765007780538
+[debug] [2025-12-11T04:07:51.454Z] Checked if tokens are valid: false, expires at: 1765007780538
+[debug] [2025-12-11T04:07:51.454Z] > refreshing access token with scopes: []
+[debug] [2025-12-11T04:07:51.456Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-12-11T04:07:51.456Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-12-11T04:07:51.591Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2025-12-11T04:07:51.591Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-12-11T04:07:51.603Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/finops-saas-mvp:testIamPermissions [none]
+[debug] [2025-12-11T04:07:51.603Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/finops-saas-mvp:testIamPermissions x-goog-quota-user=projects/finops-saas-mvp
+[debug] [2025-12-11T04:07:51.603Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/finops-saas-mvp:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-12-11T04:07:51.815Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/finops-saas-mvp:testIamPermissions 200
+[debug] [2025-12-11T04:07:51.815Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/finops-saas-mvp:testIamPermissions {}
+[debug] [2025-12-11T04:07:51.815Z] [iam] error while checking permissions, command may fail: Authorization failed. This account is missing the following required permissions on project finops-saas-mvp:
+
+  firebase.projects.get
+  firebasehosting.sites.update
+[debug] [2025-12-11T04:07:51.816Z] Checked if tokens are valid: true, expires at: 1765429670591
+[debug] [2025-12-11T04:07:51.816Z] Checked if tokens are valid: true, expires at: 1765429670591
+[debug] [2025-12-11T04:07:51.817Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/finops-saas-mvp [none]
+[debug] [2025-12-11T04:07:52.147Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/finops-saas-mvp 403
+[debug] [2025-12-11T04:07:52.147Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/finops-saas-mvp {"error":{"code":403,"message":"The caller does not have permission","status":"PERMISSION_DENIED"}}
+[debug] [2025-12-11T04:07:52.152Z] Request to https://firebase.googleapis.com/v1beta1/projects/finops-saas-mvp had HTTP Error: 403, The caller does not have permission
+[debug] [2025-12-11T04:07:52.230Z] FirebaseError: Request to https://firebase.googleapis.com/v1beta1/projects/finops-saas-mvp had HTTP Error: 403, The caller does not have permission
+    at responseToError (/home/carl-f-frank/.gemini/antigravity/scratch/finops-saas-mvp/node_modules/firebase-tools/lib/responseToError.js:53:12)
+    at RetryOperation._fn (/home/carl-f-frank/.gemini/antigravity/scratch/finops-saas-mvp/node_modules/firebase-tools/lib/apiv2.js:322:77)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+[error] 
+[error] Error: Failed to get Firebase project finops-saas-mvp. Please make sure the project exists and your account has permission to access it.

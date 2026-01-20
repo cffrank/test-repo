@@ -1,0 +1,18 @@
+{
+    "hosting": [
+        {
+            "target": "finops-saas-mvp",
+            "source": ".",
+            "ignore": [
+                "firebase.json",
+                "**/.*",
+                "**/node_modules/**",
+                "website/**"
+            ],
+            "frameworksBackend": {
+                "region": "us-central1"
+            }
+        }
+    ]
+}
+```
