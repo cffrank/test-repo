@@ -4,8 +4,9 @@ export interface CostRecord {
     service: string;
     amount: number;
     date: string;
-    account_id: string;
+    account: string;
     region: string;
+    category: string;
 }
 
 export const parseCostCsv = (csvContent: string): CostRecord[] => {
@@ -15,7 +16,7 @@ export const parseCostCsv = (csvContent: string): CostRecord[] => {
             skip_empty_lines: true,
             trim: true,
             cast: (value, context) => {
-                if (context.column === "amount") {
+                if (context.column === "amount" || context.column === "Amount") {
                     return parseFloat(value);
                 }
                 return value;
@@ -31,8 +32,9 @@ export const parseCostCsv = (csvContent: string): CostRecord[] => {
             service: String(r.Service || r.service || "Unknown"),
             amount: Number(r.Amount || r.amount || r.Cost || r.cost || 0),
             date: String(r.Date || r.date || new Date().toISOString().split("T")[0]),
-            account_id: String(r.AccountID || r.account_id || "default"),
-            region: String(r.Region || r.region || "global")
+            account: String(r.Account || r.account || r.AccountID || r.account_id || "default"),
+            region: String(r.Region || r.region || "global"),
+            category: String(r.Category || r.category || "Unknown"),
         }));
     } catch (error) {
         console.error("CSV Parse Error:", error);
