@@ -67,6 +67,7 @@ export async function createExpenses(
   const values = expensesData.map((e) => ({
     ...e,
     projectId,
+    date: e.date instanceof Date ? e.date : new Date(e.date as string),
   }));
   return db.insert(expenses).values(values).returning();
 }
@@ -90,7 +91,8 @@ export async function getDashboardMetrics(projectId: string) {
 
   const monthlySpend = projectExpenses.reduce(
     (acc, e) => {
-      const monthKey = e.date.toISOString().slice(0, 7);
+      const date = e.date instanceof Date ? e.date : new Date(e.date);
+      const monthKey = date.toISOString().slice(0, 7);
       acc[monthKey] = (acc[monthKey] || 0) + Number(e.amount);
       return acc;
     },
