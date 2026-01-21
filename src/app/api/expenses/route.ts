@@ -14,7 +14,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const projectId = searchParams.get("projectId") || user.id;
 
-    const expenses = await getExpenses(projectId, user.id);
+    const expenses = await getExpenses(projectId);
     return NextResponse.json({ expenses });
   } catch (error: any) {
     console.error("Error fetching expenses:", error);

@@ -59,6 +59,18 @@ export async function createExpense(data: Omit<typeof expenses.$inferInsert, "id
   return expense;
 }
 
+export async function createExpenses(
+  projectId: string,
+  userId: string,
+  expensesData: Array<Omit<typeof expenses.$inferInsert, "id" | "createdAt" | "projectId">>
+) {
+  const values = expensesData.map((e) => ({
+    ...e,
+    projectId,
+  }));
+  return db.insert(expenses).values(values).returning();
+}
+
 export async function deleteExpense(id: string) {
   await db.delete(expenses).where(eq(expenses.id, id));
 }
