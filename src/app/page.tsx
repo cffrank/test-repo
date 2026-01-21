@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   return (
@@ -8,8 +8,8 @@ export default function Home() {
         FinOps <span className="text-green-500">Control Panel</span>
       </h1>
       <p className="text-xl text-slate-400 max-w-2xl mb-10">
-        AI-driven insights to optimize your cloud spend.
-        Automate tasks, reduce waste, and gain full visibility into your AWS costs.
+        AI-driven insights to optimize your cloud spend. Automate tasks, reduce waste, and gain full
+        visibility into your AWS costs.
       </p>
 
       <div className="flex gap-4">

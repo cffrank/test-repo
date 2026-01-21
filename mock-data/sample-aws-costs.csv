@@ -1,0 +1,16 @@
+Date,Service,Account,Region,Category,Amount
+2025-01-01,AWS EC2,main-account,us-east-1,Computing,120.50
+2025-01-01,AWS S3,main-account,us-east-1,Storage,45.00
+2025-01-02,AWS RDS,main-account,us-east-1,Database,89.00
+2025-01-03,AWS Lambda,main-account,us-east-1,Computing,23.75
+2025-01-04,AWS CloudFront,main-account,global,Content Delivery,67.00
+2025-01-05,AWS EKS,main-account,us-east-1,Computing,145.00
+2025-01-06,AWS ECS,main-account,us-east-1,Computing,78.25
+2025-01-07,AWS DynamoDB,main-account,us-east-1,Database,34.50
+2025-01-08,AWS ElastiCache,main-account,us-east-1,Database,56.00
+2025-01-09,AWS ELB,main-account,us-east-1,Computing,45.75
+2025-01-10,AWS API Gateway,main-account,us-east-1,Computing,12.50
+2025-01-11,AWS SQS,main-account,us-east-1,Integration,8.25
+2025-01-12,AWS SNS,main-account,us-east-1,Integration,6.00
+2025-01-13,AWS Kinesis,main-account,us-east-1,Streaming,19.00
+2025-01-14,AWS Redshift,main-account,us-east-1,Analytics,125.00
