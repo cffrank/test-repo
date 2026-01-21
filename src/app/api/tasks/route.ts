@@ -1,5 +1,5 @@
 import { neonAuth } from "@/lib/auth/server";
-import { getTasks, createTask } from "@/lib/db/queries";
+import { getOptimizationTasks, createOptimizationTask } from "@/lib/db/queries";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
@@ -13,9 +13,8 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const projectId = searchParams.get("projectId") || user.id;
-    const status = searchParams.get("status");
 
-    const tasks = await getTasks(projectId, user.id, status || undefined);
+    const tasks = await getOptimizationTasks(projectId);
     return NextResponse.json({ tasks });
   } catch (error: any) {
     console.error("Error fetching tasks:", error);
@@ -39,14 +38,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Title is required" }, { status: 400 });
     }
 
-    const task = await createTask({
-      userId: user.id,
+    const task = await createOptimizationTask({
       projectId: projectId || user.id,
       title,
       description,
       savings,
       effort,
       priority,
+      status: "pending",
     });
 
     return NextResponse.json({ task }, { status: 201 });

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CostChart } from "@/components/dashboard/CostChart";
@@ -19,24 +19,53 @@ export default function DashboardPage() {
   const { user } = useAuth();
   const [analytics, setAnalytics] = useState<Analytics | null>(null);
   const [loading, setLoading] = useState(true);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [taskListKey, setTaskListKey] = useState(0);
+
+  const fetchAnalytics = useCallback(async () => {
+    if (!user) return;
+    try {
+      const res = await fetch(`/api/analytics?projectId=${user.id}`);
+      if (res.ok) {
+        const data = await res.json();
+        setAnalytics(data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch analytics:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
 
   useEffect(() => {
-    async function fetchAnalytics() {
-      if (!user) return;
-      try {
-        const res = await fetch(`/api/analytics?projectId=${user.id}`);
-        if (res.ok) {
-          const data = await res.json();
-          setAnalytics(data);
-        }
-      } catch (error) {
-        console.error("Failed to fetch analytics:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
     fetchAnalytics();
-  }, [user]);
+  }, [fetchAnalytics]);
+
+  const handleAnalyzeCosts = async () => {
+    if (!user || analyzing) return;
+    setAnalyzing(true);
+    try {
+      const res = await fetch("/api/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ projectId: user.id }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        console.log("Analysis complete:", data.message);
+        // Refresh analytics and task list
+        await fetchAnalytics();
+        setTaskListKey((k) => k + 1);
+      } else {
+        const error = await res.json();
+        console.error("Analysis failed:", error);
+      }
+    } catch (error) {
+      console.error("Analysis error:", error);
+    } finally {
+      setAnalyzing(false);
+    }
+  };
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -52,7 +81,9 @@ export default function DashboardPage() {
           <h1 className="text-2xl font-bold text-white">Dashboard</h1>
           <p className="text-slate-400">Overview of your cloud infrastructure costs.</p>
         </div>
-        <Button>Analyze Costs</Button>
+        <Button onClick={handleAnalyzeCosts} disabled={analyzing || !analytics?.expenseCount}>
+          {analyzing ? "Analyzing..." : "Analyze Costs"}
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
@@ -91,7 +122,7 @@ export default function DashboardPage() {
           </div>
         </Card>
         <Card className="h-96 overflow-y-auto">
-          <TaskList />
+          <TaskList key={taskListKey} />
         </Card>
       </div>
     </div>
