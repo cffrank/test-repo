@@ -11,17 +11,19 @@ import {
     ResponsiveContainer,
 } from "recharts";
 
-const data = [
-    { name: "Jan", cost: 4000 },
-    { name: "Feb", cost: 3000 },
-    { name: "Mar", cost: 2000 },
-    { name: "Apr", cost: 2780 },
-    { name: "May", cost: 1890 },
-    { name: "Jun", cost: 2390 },
-    { name: "Jul", cost: 3490 },
-];
+interface CostChartProps {
+    data?: { name: string; cost: number }[];
+}
 
-export function CostChart() {
+export function CostChart({ data = [] }: CostChartProps) {
+    if (data.length === 0) {
+        return (
+            <div className="h-[300px] w-full flex items-center justify-center text-slate-500">
+                No cost data available. Upload your cost data to see trends.
+            </div>
+        );
+    }
+
     return (
         <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">

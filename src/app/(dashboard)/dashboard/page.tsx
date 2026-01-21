@@ -1,12 +1,50 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CostChart } from "@/components/dashboard/CostChart";
 import { TaskList } from "@/components/dashboard/TaskList";
+import { useAuth } from "@/context/AuthContext";
+
+interface Analytics {
+  totalSpend: number;
+  totalSavings: number;
+  pendingSavings: number;
+  monthlyData: { name: string; cost: number }[];
+  expenseCount: number;
+}
 
 export default function DashboardPage() {
+  const { user } = useAuth();
+  const [analytics, setAnalytics] = useState<Analytics | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchAnalytics() {
+      if (!user) return;
+      try {
+        const res = await fetch(`/api/analytics?projectId=${user.id}`);
+        if (res.ok) {
+          const data = await res.json();
+          setAnalytics(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch analytics:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchAnalytics();
+  }, [user]);
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(amount);
+  };
+
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
@@ -19,20 +57,28 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         <Card>
-          <h3 className="text-sm font-medium text-slate-400">Total Spend (MTD)</h3>
-          <p className="mt-2 text-3xl font-bold text-white">$0.00</p>
-          <span className="mt-1 inline-block text-xs text-green-500">+0% from last month</span>
+          <h3 className="text-sm font-medium text-slate-400">Total Spend</h3>
+          <p className="mt-2 text-3xl font-bold text-white">
+            {loading ? "..." : formatCurrency(analytics?.totalSpend || 0)}
+          </p>
+          <span className="mt-1 inline-block text-xs text-slate-500">
+            {analytics?.expenseCount || 0} expense records
+          </span>
         </Card>
         <Card>
-          <h3 className="text-sm font-medium text-slate-400">Forecasted Spend</h3>
-          <p className="mt-2 text-3xl font-bold text-white">$0.00</p>
-          <span className="mt-1 inline-block text-xs text-slate-500">Based on current usage</span>
+          <h3 className="text-sm font-medium text-slate-400">Savings Achieved</h3>
+          <p className="mt-2 text-3xl font-bold text-green-500">
+            {loading ? "..." : formatCurrency(analytics?.totalSavings || 0)}
+          </p>
+          <span className="mt-1 inline-block text-xs text-slate-500">From completed optimizations</span>
         </Card>
         <Card>
           <h3 className="text-sm font-medium text-slate-400">Potential Savings</h3>
-          <p className="mt-2 text-3xl font-bold text-green-500">$0.00</p>
+          <p className="mt-2 text-3xl font-bold text-yellow-500">
+            {loading ? "..." : formatCurrency(analytics?.pendingSavings || 0)}
+          </p>
           <span className="mt-1 inline-block text-xs text-slate-500">
-            0 optimizations available
+            From pending optimizations
           </span>
         </Card>
       </div>
@@ -41,7 +87,7 @@ export default function DashboardPage() {
         <Card className="h-96">
           <h3 className="mb-4 text-sm font-medium text-slate-400">Cost Trend</h3>
           <div className="h-[calc(100%-2rem)] w-full">
-            <CostChart />
+            <CostChart data={analytics?.monthlyData} />
           </div>
         </Card>
         <Card className="h-96 overflow-y-auto">
