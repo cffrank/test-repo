@@ -51,27 +51,39 @@ export default function UploadPage() {
       const text = await file.text();
       const records = parseCostCsv(text);
 
-      const response = await fetch("/api/expenses", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          projectId: user.id,
-          expenses: records.slice(0, 100).map((record: any) => ({
-            projectId: user.id,
-            amount: parseFloat(record.amount) || 0,
-            currency: record.currency || "USD",
-            date: record.date ? new Date(record.date).toISOString() : new Date().toISOString(),
-            category: record.category || "Unknown",
-            service: record.service || "Unknown",
-            accountId: record.account || "default",
-            region: record.region || "global",
-          })),
-        }),
-      });
+      // Map all records to expense format
+      const allExpenses = records.map((record: any) => ({
+        amount: Number(record.amount) || 0,
+        currency: record.currency || "USD",
+        date: record.date ? new Date(record.date).toISOString() : new Date().toISOString(),
+        category: record.category || "Unknown",
+        service: record.service || "Unknown",
+        accountId: record.account || "default",
+        region: record.region || "global",
+      }));
 
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || "Failed to upload expenses");
+      // Batch upload in chunks of 500
+      const BATCH_SIZE = 500;
+      let uploaded = 0;
+
+      for (let i = 0; i < allExpenses.length; i += BATCH_SIZE) {
+        const batch = allExpenses.slice(i, i + BATCH_SIZE);
+
+        const response = await fetch("/api/expenses", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            projectId: user.id,
+            expenses: batch,
+          }),
+        });
+
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.error || `Failed to upload batch ${i / BATCH_SIZE + 1}`);
+        }
+
+        uploaded += batch.length;
       }
 
       setStatus("success");
