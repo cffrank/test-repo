@@ -1,0 +1,57 @@
+version: 1
+disable_existing_loggers: false
+
+formatters:
+  standard:
+    format: "%(asctime)s %(levelname).1s %(name)s:%(lineno)d — %(message)s"
+    datefmt: "%Y-%m-%d %H:%M:%S"
+
+  detailed:
+    format: "%(asctime)s [%(levelname)s] %(name)s:%(lineno)d [%(funcName)s] — %(message)s"
+    datefmt: "%Y-%m-%d %H:%M:%S"
+
+handlers:
+  file_detailed:
+    class: logging.handlers.RotatingFileHandler
+    filename: focus_validator_detailed.log
+    maxBytes: 10485760 # 10MB
+    backupCount: 5
+    formatter: detailed
+    level: DEBUG
+
+root:
+  level: DEBUG
+  handlers: [file_detailed]
+
+loggers:
+  focus_validator.main:
+    level: DEBUG
+    propagate: true
+
+  focus_validator.validator:
+    level: DEBUG
+    propagate: true
+
+  focus_validator.rules.spec_rules:
+    level: DEBUG
+    propagate: true
+
+  focus_validator.config_objects.rule_dependency_resolver:
+    level: DEBUG
+    propagate: true
+
+  focus_validator.data_loaders:
+    level: DEBUG
+    propagate: true
+
+  focus_validator.config_objects.focus_to_duckdb_converter:
+    level: DEBUG
+    propagate: true
+
+  focus_validator.outputter:
+    level: DEBUG
+    propagate: true
+
+  validation_results_visualizer:
+    level: DEBUG
+    propagate: true

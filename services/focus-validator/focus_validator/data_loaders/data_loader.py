@@ -1,0 +1,94 @@
+import logging
+import os
+from typing import Optional, Type, Union
+
+import polars as pl
+
+from focus_validator.data_loaders.csv_data_loader import CSVDataLoader
+from focus_validator.data_loaders.parquet_data_loader import ParquetDataLoader
+from focus_validator.exceptions import FocusNotImplementedError
+from focus_validator.utils.performance_logging import logPerformance
+
+
+class DataLoader:
+    def __init__(
+        self,
+        data_filename: Optional[str],
+        data_format: Optional[str] = None,
+        column_types: Optional[dict] = None,
+    ) -> None:
+        self.log = logging.getLogger(f"{__name__}.{self.__class__.__qualname__}")
+        self.data_filename = data_filename
+        self.data_format = data_format
+        self.column_types = column_types or {}
+
+        if data_filename == "-":
+            format_info = f" (format: {data_format})" if data_format else ""
+            self.log.info("Initializing DataLoader for stdin%s", format_info)
+        else:
+            self.log.info("Initializing DataLoader for file: %s", data_filename)
+
+            if data_filename and os.path.exists(data_filename):
+                file_size = os.path.getsize(data_filename)
+                self.log.info("File size: %.2f MB", file_size / 1024 / 1024)
+            else:
+                self.log.warning(
+                    "Data file does not exist or path is None: %s", data_filename
+                )
+
+        self.data_loader_class = self.find_data_loader()
+        self.data_loader = self.data_loader_class(
+            self.data_filename, column_types=self.column_types
+        )
+
+    def find_data_loader(self) -> Type[Union[CSVDataLoader, ParquetDataLoader]]:
+        self.log.debug("Determining data loader for file: %s", self.data_filename)
+
+        if self.data_filename is None:
+            self.log.error("Data filename is None")
+            raise FocusNotImplementedError("Data filename cannot be None.")
+
+        # Handle stdin input with explicit format
+        if self.data_filename == "-":
+            if self.data_format == "parquet":
+                self.log.debug("Using Parquet data loader for stdin")
+                return ParquetDataLoader
+            else:  # Default to CSV for stdin
+                self.log.debug("Using CSV data loader for stdin")
+                return CSVDataLoader
+        elif self.data_filename.endswith(".csv"):
+            self.log.debug("Using CSV data loader")
+            return CSVDataLoader
+        elif self.data_filename.endswith(".parquet"):
+            self.log.debug("Using Parquet data loader")
+            return ParquetDataLoader
+        else:
+            self.log.error("Unsupported file type: %s", self.data_filename)
+            raise FocusNotImplementedError("File type not implemented yet.")
+
+    @logPerformance("data_loader.load", includeArgs=True)
+    def load(self) -> Optional[pl.DataFrame]:
+        self.log.info("Loading data from file...")
+        result = self.data_loader.load()
+
+        if result is not None:
+            try:
+                row_count = len(result)
+                col_count = (
+                    len(result.columns) if hasattr(result, "columns") else "unknown"
+                )
+                self.log.info(
+                    "Data loaded successfully: %d rows, %s columns",
+                    row_count,
+                    col_count,
+                )
+
+                if hasattr(result, "columns"):
+                    self.log.debug("Columns: %s", list(result.columns))
+
+            except Exception as e:
+                self.log.warning("Could not determine data dimensions: %s", e)
+        else:
+            self.log.warning("Data loading returned None")
+
+        return result

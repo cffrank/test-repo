@@ -1,0 +1,22 @@
+# Core dependencies for FOCUS Validator API
+pandas>=2.0.0
+tabulate
+pyarrow
+pydantic>=2.12
+pyyaml>=6.0.3
+requests
+pandera>=0.26.1
+multimethod>=2.0,<2.1
+sqlglot>=27.28.1
+numpy>=1.26
+pytz>=2025.2
+pandasql>=0.7.3
+polars>=1.34.0
+ddt>=1.7.1
+duckdb>=1.4.1
+graphviz>=0.21
+
+# API dependencies
+fastapi>=0.115.0
+uvicorn[standard]>=0.34.0
+python-multipart>=0.0.20

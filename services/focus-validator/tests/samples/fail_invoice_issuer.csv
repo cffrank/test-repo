@@ -1,0 +1,3 @@
+InvoiceIssuerName,ResourceID,ProviderName,BilledCost,AvailabilityZone
+"test-entity-1","r1","AWS",0.2,1.2
+AWS,"r2",AWS,100.65,1.2
