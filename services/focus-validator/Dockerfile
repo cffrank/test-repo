@@ -21,11 +21,11 @@ COPY . ${WORKING_DIR}
 RUN pip install --no-cache-dir .
 
 # Expose port for Railway
-EXPOSE 8000
+EXPOSE 8080
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8000/health || exit 1
+    CMD curl -f http://localhost:8080/health || exit 1
 
-# Run the FastAPI server (Railway sets PORT env var)
-CMD ["sh", "-c", "uvicorn api:app --host 0.0.0.0 --port ${PORT:-8000}"]
+# Run the FastAPI server
+CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8080"]
