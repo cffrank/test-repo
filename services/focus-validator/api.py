@@ -5,7 +5,6 @@ Provides REST API for validating FOCUS-compliant cost data.
 
 import tempfile
 import os
-import json
 from typing import Optional
 from fastapi import FastAPI, UploadFile, File, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -13,7 +12,6 @@ from pydantic import BaseModel
 import polars as pl
 
 from focus_validator.validator import Validator
-from focus_validator.config_objects.rule import CheckResult
 
 app = FastAPI(
     title="FOCUS Validator Service",
@@ -34,10 +32,9 @@ app.add_middleware(
 class ValidationError(BaseModel):
     rule_id: str
     rule_name: str
-    column: Optional[str]
+    column: Optional[str] = None
     error_message: str
     violation_count: int
-    sample_values: Optional[list] = None
 
 
 class ValidationResult(BaseModel):
@@ -99,7 +96,7 @@ async def validate_focus_file(
         # Run validation
         validator = Validator(
             data_filename=tmp_path,
-            output_type="console",  # We'll process results ourselves
+            output_type="console",
             output_destination=None,
             rules_version=version,
         )
@@ -110,28 +107,46 @@ async def validate_focus_file(
         errors = []
         rules_passed = 0
         rules_failed = 0
-        rules_checked = 0
+        rules_skipped = 0
 
-        if results and hasattr(results, 'check_results'):
-            for check_result in results.check_results:
-                rules_checked += 1
+        if results and hasattr(results, 'by_rule_id'):
+            for rule_id, entry in results.by_rule_id.items():
+                details = entry.get("details") or {}
 
-                if check_result.status == CheckResult.PASSED:
+                # Check if skipped
+                if details.get("skipped"):
+                    rules_skipped += 1
+                    continue
+
+                # Check pass/fail
+                if entry.get("ok"):
                     rules_passed += 1
-                elif check_result.status == CheckResult.FAILED:
+                else:
                     rules_failed += 1
 
-                    # Extract error details
+                    # Get rule info if available
+                    rule_info = results.rules.get(rule_id)
+                    rule_name = rule_id
+                    column = None
+
+                    if rule_info:
+                        rule_name = getattr(rule_info, 'name', rule_id) or rule_id
+                        column = getattr(rule_info, 'column', None)
+
+                    # Build error message
+                    error_msg = details.get("message") or details.get("reason") or "Validation failed"
+                    violation_count = details.get("violations", 0)
+
                     error = ValidationError(
-                        rule_id=check_result.rule_id or "unknown",
-                        rule_name=check_result.rule_name or check_result.rule_id or "Unknown Rule",
-                        column=check_result.column_name,
-                        error_message=check_result.error_message or "Validation failed",
-                        violation_count=check_result.violation_count or 0,
-                        sample_values=check_result.sample_values[:5] if check_result.sample_values else None,
+                        rule_id=rule_id,
+                        rule_name=rule_name,
+                        column=column,
+                        error_message=str(error_msg),
+                        violation_count=violation_count,
                     )
                     errors.append(error)
 
+        rules_checked = rules_passed + rules_failed
         valid = rules_failed == 0
 
         if valid:
