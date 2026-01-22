@@ -99,6 +99,7 @@ async def validate_focus_file(
             output_type="console",
             output_destination=None,
             rules_version=version,
+            focus_dataset="CostAndUsage",
         )
 
         results = validator.validate()
