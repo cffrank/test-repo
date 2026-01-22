@@ -18,7 +18,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . ${WORKING_DIR}
 
 # Install the focus_validator package
-RUN pip install --no-cache-dir -e .
+RUN pip install --no-cache-dir .
 
 # Expose port for Railway
 EXPOSE 8000
