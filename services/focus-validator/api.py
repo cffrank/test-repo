@@ -85,9 +85,9 @@ async def validate_focus_file(
         tmp_path = tmp.name
 
     try:
-        # Count rows for reporting
+        # Count rows for reporting (read as strings to avoid type inference issues)
         if file.filename.endswith('.csv'):
-            df = pl.read_csv(tmp_path)
+            df = pl.read_csv(tmp_path, infer_schema=False, null_values=["NULL", "null", ""])
         else:
             df = pl.read_parquet(tmp_path)
         total_rows = len(df)
