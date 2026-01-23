@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
@@ -18,7 +18,6 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
 } from "recharts";
 
@@ -58,11 +57,7 @@ export default function CostAnalysisPage() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [comparisonPeriod, setComparisonPeriod] = useState("none");
 
-  useEffect(() => {
-    fetchExpenses();
-  }, [user]);
-
-  async function fetchExpenses() {
+  const fetchExpenses = useCallback(async () => {
     if (!user) return;
     try {
       const res = await fetch(`/api/expenses?projectId=${user.id}`);
@@ -75,7 +70,11 @@ export default function CostAnalysisPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [user]);
+
+  useEffect(() => {
+    fetchExpenses();
+  }, [fetchExpenses]);
 
   function filterExpensesByDateRange(expenses: Expense[], range: string) {
     const now = new Date();
@@ -139,6 +138,13 @@ export default function CostAnalysisPage() {
   }, [filteredExpenses]);
 
   const timeSeriesData = useMemo(() => {
+    function formatDateLabel(dateStr: string) {
+      const date = new Date(dateStr);
+      if (dateRange === "7d" || dateRange === "30d" || dateRange === "90d") {
+        return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+      }
+      return date.toLocaleDateString("en-US", { month: "short", year: "numeric" });
+    }
     const timeSeries: Record<string, number> = {};
 
     filteredExpenses.forEach((exp) => {
@@ -164,14 +170,6 @@ export default function CostAnalysisPage() {
         formattedDate: formatDateLabel(date)
       }));
   }, [filteredExpenses, dateRange]);
-
-  function formatDateLabel(dateStr: string) {
-    const date = new Date(dateStr);
-    if (dateRange === "7d" || dateRange === "30d" || dateRange === "90d") {
-      return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-    }
-    return date.toLocaleDateString("en-US", { month: "short", year: "numeric" });
-  }
 
   const comparisonData = useMemo(() => {
     if (comparisonPeriod === "none") return null;

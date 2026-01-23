@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -76,11 +76,7 @@ export default function CloudServicesPage() {
   const [expandedService, setExpandedService] = useState<string | null>(null);
   const [serviceDetails, setServiceDetails] = useState<Record<string, ServiceDetail>>({});
 
-  useEffect(() => {
-    fetchServices();
-  }, [user]);
-
-  async function fetchServices() {
+  const fetchServices = useCallback(async () => {
     if (!user) return;
     try {
       const res = await fetch(`/api/cloud-services?projectId=${user.id}`);
@@ -96,11 +92,13 @@ export default function CloudServicesPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [user]);
+
+  useEffect(() => {
+    fetchServices();
+  }, [fetchServices]);
 
   function generateMockServices(): CloudService[] {
-    const categories = ["Compute", "Storage", "Database", "Networking", "Security", "Analytics"];
-    const providers = ["AWS", "Azure", "GCP"];
     const services = [
       { name: "EC2 Instances", category: "Compute", provider: "AWS" },
       { name: "S3 Buckets", category: "Storage", provider: "AWS" },

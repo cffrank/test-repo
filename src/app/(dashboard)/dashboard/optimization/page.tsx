@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -60,11 +60,7 @@ export default function OptimizationPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("pending");
 
-  useEffect(() => {
-    fetchTasks();
-  }, [user]);
-
-  async function fetchTasks() {
+  const fetchTasks = useCallback(async () => {
     if (!user) return;
     try {
       const res = await fetch(`/api/tasks?projectId=${user.id}`);
@@ -77,7 +73,11 @@ export default function OptimizationPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [user]);
+
+  useEffect(() => {
+    fetchTasks();
+  }, [fetchTasks]);
 
   async function updateTaskStatus(taskId: string, status: "pending" | "completed" | "dismissed") {
     try {

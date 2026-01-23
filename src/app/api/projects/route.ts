@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 export const runtime = 'edge';
 
-export async function GET(request: Request) {
+export async function GET(_request: Request) {
   const auth = neonAuth();
   const user = await auth.user();
 

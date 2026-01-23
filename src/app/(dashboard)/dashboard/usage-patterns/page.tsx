@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
@@ -8,15 +8,12 @@ import { useAuth } from "@/context/AuthContext";
 import {
   LineChart,
   Line,
-  BarChart,
-  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   Legend,
   ResponsiveContainer,
-  Cell,
 } from "recharts";
 import {
   Activity,
@@ -72,30 +69,7 @@ export default function UsagePatternsPage() {
   const [selectedPeriod, setSelectedPeriod] = useState("7d");
   const [selectedService, setSelectedService] = useState("all");
 
-  useEffect(() => {
-    fetchUsageData();
-  }, [user, selectedPeriod]);
-
-  async function fetchUsageData() {
-    if (!user) return;
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/usage-patterns?projectId=${user.id}&period=${selectedPeriod}`);
-      if (res.ok) {
-        const data = await res.json();
-        setUsageData(data.usage || generateMockUsageData());
-      } else {
-        setUsageData(generateMockUsageData());
-      }
-    } catch (error) {
-      console.error("Failed to fetch usage data:", error);
-      setUsageData(generateMockUsageData());
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  function generateMockUsageData(): UsageData[] {
+  const generateMockUsageData = useCallback((): UsageData[] => {
     const services = ["Compute", "Storage", "Database", "Networking"];
     const data: UsageData[] = [];
     const now = new Date();
@@ -123,7 +97,30 @@ export default function UsagePatternsPage() {
     }
 
     return data;
-  }
+  }, [selectedPeriod]);
+
+  const fetchUsageData = useCallback(async () => {
+    if (!user) return;
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/usage-patterns?projectId=${user.id}&period=${selectedPeriod}`);
+      if (res.ok) {
+        const data = await res.json();
+        setUsageData(data.usage || generateMockUsageData());
+      } else {
+        setUsageData(generateMockUsageData());
+      }
+    } catch (error) {
+      console.error("Failed to fetch usage data:", error);
+      setUsageData(generateMockUsageData());
+    } finally {
+      setLoading(false);
+    }
+  }, [user, selectedPeriod, generateMockUsageData]);
+
+  useEffect(() => {
+    fetchUsageData();
+  }, [fetchUsageData]);
 
   const filteredData = useMemo(() => {
     if (selectedService === "all") return usageData;

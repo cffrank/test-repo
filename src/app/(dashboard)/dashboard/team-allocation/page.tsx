@@ -144,7 +144,6 @@ const MOCK_TEAMS: TeamData[] = [
 const COLORS = ["#EA994A", "#1E3B46", "#4A90E2", "#7B68EE", "#2ECC71"];
 
 export default function TeamAllocationPage() {
-  const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
   const [expandedTeams, setExpandedTeams] = useState<Set<string>>(new Set());
 
   function formatCurrency(amount: number) {
@@ -212,9 +211,7 @@ export default function TeamAllocationPage() {
     setExpandedTeams(newExpanded);
   }
 
-  const filteredTeams = selectedTeam
-    ? MOCK_TEAMS.filter((team) => team.id === selectedTeam)
-    : MOCK_TEAMS;
+  const filteredTeams = MOCK_TEAMS;
 
   return (
     <div className="space-y-6">
@@ -442,7 +439,7 @@ export default function TeamAllocationPage() {
                     <div className="mt-4 p-4 bg-slate-900 rounded-lg border border-slate-700">
                       <h5 className="text-sm font-semibold text-white mb-3">Top Services</h5>
                       <div className="space-y-3">
-                        {team.topServices.map((service, index) => {
+                        {team.topServices.map((service) => {
                           const servicePercent = (service.cost / team.spent) * 100;
                           return (
                             <div key={service.service} className="space-y-1">

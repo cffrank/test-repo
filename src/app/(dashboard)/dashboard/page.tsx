@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState, useCallback } from "react";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { CostChart } from "@/components/dashboard/CostChart";
@@ -88,14 +87,6 @@ export default function DashboardPage() {
       style: "currency",
       currency: "USD",
     }).format(amount);
-  };
-
-  const getBudgetStatus = () => {
-    if (!analytics?.budget) return "success";
-    const { percentage } = analytics.budget;
-    if (percentage >= 90) return "destructive";
-    if (percentage >= 75) return "warning";
-    return "success";
   };
 
   const getBudgetColor = () => {
