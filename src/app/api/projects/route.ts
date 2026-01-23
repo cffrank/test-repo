@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 export const runtime = 'edge';
 
 export async function GET(request: Request) {
-  const auth = neonAuth(request);
+  const auth = neonAuth();
   const user = await auth.user();
 
   if (!user) {
@@ -15,14 +15,15 @@ export async function GET(request: Request) {
   try {
     const projects = await getProjects(user.id);
     return NextResponse.json({ projects });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error fetching projects:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : "Failed to fetch projects";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
 
 export async function POST(request: Request) {
-  const auth = neonAuth(request);
+  const auth = neonAuth();
   const user = await auth.user();
 
   if (!user) {
@@ -45,8 +46,9 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ project }, { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error creating project:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : "Failed to create project";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

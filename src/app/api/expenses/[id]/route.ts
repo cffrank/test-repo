@@ -8,7 +8,7 @@ export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const auth = neonAuth(request);
+  const auth = neonAuth();
   const user = await auth.user();
 
   if (!user) {
@@ -25,8 +25,9 @@ export async function DELETE(
     }
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error deleting expense:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : "Failed to delete expense";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

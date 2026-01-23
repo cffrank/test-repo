@@ -8,7 +8,7 @@ export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const auth = neonAuth(request);
+  const auth = neonAuth();
   const user = await auth.user();
 
   if (!user) {
@@ -24,9 +24,10 @@ export async function GET(
     }
 
     return NextResponse.json({ project });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error fetching project:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : "Failed to fetch project";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
 
@@ -34,7 +35,7 @@ export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const auth = neonAuth(request);
+  const auth = neonAuth();
   const user = await auth.user();
 
   if (!user) {
@@ -44,7 +45,7 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await request.json();
-    const { name, description, currency } = body;
+    const { name, description } = body;
 
     await updateProject(id, {
       name,
@@ -57,9 +58,10 @@ export async function PUT(
     }
 
     return NextResponse.json({ project });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error updating project:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : "Failed to update project";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
 
@@ -67,7 +69,7 @@ export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const auth = neonAuth(request);
+  const auth = neonAuth();
   const user = await auth.user();
 
   if (!user) {
@@ -84,8 +86,9 @@ export async function DELETE(
     }
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error deleting project:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : "Failed to delete project";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

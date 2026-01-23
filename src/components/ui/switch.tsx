@@ -9,7 +9,7 @@ interface SwitchProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 
 }
 
 const Switch = React.forwardRef<HTMLButtonElement, SwitchProps>(
-  ({ className, checked = false, onCheckedChange, disabled, id, ...props }, ref) => {
+  ({ className, checked = false, onCheckedChange, disabled, id }, ref) => {
     const [internalChecked, setInternalChecked] = React.useState(checked)
 
     const isChecked = onCheckedChange !== undefined ? checked : internalChecked

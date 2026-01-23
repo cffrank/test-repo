@@ -1,5 +1,5 @@
 import { db, projects, expenses, optimizationTasks } from "@/db";
-import { eq, desc, and, gte, sql } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 
 export async function getProjects(userId: string) {
   return db

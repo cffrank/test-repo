@@ -3,10 +3,8 @@
 import { NeonAuthUIProvider, SignUpForm } from "@neondatabase/auth-ui";
 import "@neondatabase/auth-ui/css";
 import { authClient } from "@/lib/auth/client";
-import { useRouter } from "next/navigation";
 
 export default function SignUpPage() {
-  const router = useRouter();
 
   return (
     <NeonAuthUIProvider authClient={authClient}>

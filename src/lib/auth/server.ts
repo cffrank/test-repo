@@ -4,7 +4,7 @@ export const authServer = createAuthServer();
 
 // Export neonAuth function for use in API routes
 // This wraps the session fetch to provide auth context with user() method
-export function neonAuth(_request: Request) {
+export function neonAuth() {
   return {
     async user() {
       const { user } = await getNeonSession();

@@ -96,9 +96,10 @@ export default function UploadPage() {
       setValidationResult(result);
       setStep("validated");
 
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Validation error:", err);
-      setError(err.message || "Failed to validate file");
+      const errorMessage = err instanceof Error ? err.message : "Failed to validate file";
+      setError(errorMessage);
       setStep("error");
     }
   };
@@ -114,9 +115,9 @@ export default function UploadPage() {
       const text = await file.text();
       const records = parseCostCsv(text);
 
-      const allExpenses = records.map((record: any) => ({
+      const allExpenses = records.map((record) => ({
         amount: Number(record.amount) || 0,
-        currency: record.currency || "USD",
+        currency: "USD",
         date: record.date ? new Date(record.date).toISOString() : new Date().toISOString(),
         category: record.category || "Unknown",
         service: record.service || "Unknown",
@@ -151,9 +152,10 @@ export default function UploadPage() {
       setStep("success");
       setFile(null);
       setValidationResult(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Upload error:", err);
-      setError(err.message);
+      const errorMessage = err instanceof Error ? err.message : "Upload failed";
+      setError(errorMessage);
       setStep("error");
     }
   };

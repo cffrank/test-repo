@@ -37,7 +37,7 @@ const DropdownMenuTrigger = ({ asChild, children }: DropdownMenuTriggerProps) =>
   const handleClick = () => context.setOpen(!context.open)
 
   if (asChild && React.isValidElement(children)) {
-    return React.cloneElement(children as React.ReactElement<any>, {
+    return React.cloneElement(children, {
       onClick: handleClick,
     })
   }

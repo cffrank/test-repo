@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 export const runtime = 'edge';
 
 export async function GET(request: Request) {
-  const auth = neonAuth(request);
+  const auth = neonAuth();
   const user = await auth.user();
 
   if (!user) {
@@ -18,14 +18,15 @@ export async function GET(request: Request) {
 
     const expenses = await getExpenses(projectId);
     return NextResponse.json({ expenses });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error fetching expenses:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : "Failed to fetch expenses";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
 
 export async function POST(request: Request) {
-  const auth = neonAuth(request);
+  const auth = neonAuth();
   const user = await auth.user();
 
   if (!user) {
@@ -43,8 +44,9 @@ export async function POST(request: Request) {
     const createdExpenses = await createExpenses(projectId || user.id, user.id, expenses);
 
     return NextResponse.json({ expenses: createdExpenses }, { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error creating expenses:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : "Failed to create expenses";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

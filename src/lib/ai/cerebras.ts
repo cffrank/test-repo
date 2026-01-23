@@ -6,7 +6,16 @@ export interface OptimizationTask {
   priority: "High" | "Medium" | "Low";
 }
 
-export async function analyzeCostDataWithCerebras(records: any[]): Promise<OptimizationTask[]> {
+interface CostRecord {
+  amount: number;
+  service: string;
+  date: string;
+  category?: string;
+  region?: string;
+  [key: string]: unknown;
+}
+
+export async function analyzeCostDataWithCerebras(records: CostRecord[]): Promise<OptimizationTask[]> {
   const prompt = `
 You are a FinOps expert. Analyze the following AWS cloud cost records and identify actionable cost optimization opportunities.
 

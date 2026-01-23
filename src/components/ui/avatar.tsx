@@ -25,13 +25,16 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
 )
 Avatar.displayName = "Avatar"
 
-interface AvatarImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {}
+interface AvatarImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
+  alt: string;
+}
 
 const AvatarImage = React.forwardRef<HTMLImageElement, AvatarImageProps>(
-  ({ className = "", ...props }, ref) => {
+  ({ className = "", alt, ...props }, ref) => {
     return (
       <img
         ref={ref}
+        alt={alt}
         className={`aspect-square h-full w-full object-cover ${className}`}
         {...props}
       />
@@ -40,7 +43,9 @@ const AvatarImage = React.forwardRef<HTMLImageElement, AvatarImageProps>(
 )
 AvatarImage.displayName = "AvatarImage"
 
-interface AvatarFallbackProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface AvatarFallbackProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: React.ReactNode;
+}
 
 const AvatarFallback = React.forwardRef<HTMLDivElement, AvatarFallbackProps>(
   ({ className = "", ...props }, ref) => {

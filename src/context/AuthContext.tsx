@@ -2,8 +2,14 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { authClient } from "@/lib/auth/client";
 
+interface User {
+  id: string;
+  email: string;
+  name?: string;
+}
+
 interface AuthContextType {
-  user: any | null;
+  user: User | null;
   loading: boolean;
   refreshSession: () => Promise<void>;
 }
@@ -15,7 +21,7 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<any | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   const checkSession = async () => {

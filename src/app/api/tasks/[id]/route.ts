@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 export const runtime = 'edge';
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const auth = neonAuth(request);
+  const auth = neonAuth();
   const user = await auth.user();
 
   if (!user) {
@@ -20,14 +20,15 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     await updateTaskStatus(id, status);
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error updating task:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : "Failed to update task";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const auth = neonAuth(request);
+  const auth = neonAuth();
   const user = await auth.user();
 
   if (!user) {
@@ -39,8 +40,9 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
     await deleteTask(id);
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error deleting task:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : "Failed to delete task";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
