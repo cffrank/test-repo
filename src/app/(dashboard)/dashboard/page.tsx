@@ -3,9 +3,16 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
 import { CostChart } from "@/components/dashboard/CostChart";
 import { TaskList } from "@/components/dashboard/TaskList";
+import { Sparkline } from "@/components/dashboard/Sparkline";
+import { TrendIndicator } from "@/components/dashboard/TrendIndicator";
+import { TopServices } from "@/components/dashboard/TopServices";
+import { QuickActions } from "@/components/dashboard/QuickActions";
 import { useAuth } from "@/context/AuthContext";
+import { DollarSign, TrendingDown, Target, Wallet } from "lucide-react";
 
 interface Analytics {
   totalSpend: number;
@@ -13,6 +20,15 @@ interface Analytics {
   pendingSavings: number;
   monthlyData: { name: string; cost: number }[];
   expenseCount: number;
+  spendTrend: number;
+  savingsTrend: number;
+  sparklineData: number[];
+  topServices: { name: string; amount: number; percentage: number }[];
+  budget: {
+    total: number;
+    used: number;
+    percentage: number;
+  };
 }
 
 export default function DashboardPage() {
@@ -74,56 +90,147 @@ export default function DashboardPage() {
     }).format(amount);
   };
 
+  const getBudgetStatus = () => {
+    if (!analytics?.budget) return "success";
+    const { percentage } = analytics.budget;
+    if (percentage >= 90) return "destructive";
+    if (percentage >= 75) return "warning";
+    return "success";
+  };
+
+  const getBudgetColor = () => {
+    if (!analytics?.budget) return "text-green-500";
+    const { percentage } = analytics.budget;
+    if (percentage >= 90) return "text-red-500";
+    if (percentage >= 75) return "text-yellow-500";
+    return "text-green-500";
+  };
+
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white">Dashboard</h1>
-          <p className="text-slate-400">Overview of your cloud infrastructure costs.</p>
+          <p className="text-slate-400">Real-time overview of your cloud infrastructure costs.</p>
         </div>
-        <Button onClick={handleAnalyzeCosts} disabled={analyzing || !analytics?.expenseCount}>
-          {analyzing ? "Analyzing..." : "Analyze Costs"}
-        </Button>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        <Card>
-          <h3 className="text-sm font-medium text-slate-400">Total Spend</h3>
-          <p className="mt-2 text-3xl font-bold text-white">
-            {loading ? "..." : formatCurrency(analytics?.totalSpend || 0)}
-          </p>
-          <span className="mt-1 inline-block text-xs text-slate-500">
-            {analytics?.expenseCount || 0} expense records
-          </span>
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <Card className="relative overflow-hidden">
+          <div className="flex items-start justify-between">
+            <div>
+              <div className="flex items-center gap-2">
+                <div className="rounded-full bg-accent/10 p-2">
+                  <DollarSign className="h-4 w-4 text-accent" />
+                </div>
+                <h3 className="text-sm font-medium text-slate-400">Total Spend</h3>
+              </div>
+              <p className="mt-3 text-3xl font-bold text-white">
+                {loading ? "..." : formatCurrency(analytics?.totalSpend || 0)}
+              </p>
+              <div className="mt-2 flex items-center gap-2">
+                {!loading && analytics?.spendTrend !== undefined && (
+                  <TrendIndicator value={analytics.spendTrend} inverse />
+                )}
+                <span className="text-xs text-slate-500">vs previous period</span>
+              </div>
+            </div>
+          </div>
+          {!loading && analytics?.sparklineData && (
+            <div className="mt-4">
+              <Sparkline data={analytics.sparklineData} width={200} height={40} />
+            </div>
+          )}
         </Card>
-        <Card>
-          <h3 className="text-sm font-medium text-slate-400">Savings Achieved</h3>
-          <p className="mt-2 text-3xl font-bold text-green-500">
-            {loading ? "..." : formatCurrency(analytics?.totalSavings || 0)}
-          </p>
-          <span className="mt-1 inline-block text-xs text-slate-500">From completed optimizations</span>
-        </Card>
-        <Card>
-          <h3 className="text-sm font-medium text-slate-400">Potential Savings</h3>
-          <p className="mt-2 text-3xl font-bold text-yellow-500">
-            {loading ? "..." : formatCurrency(analytics?.pendingSavings || 0)}
-          </p>
-          <span className="mt-1 inline-block text-xs text-slate-500">
-            From pending optimizations
-          </span>
-        </Card>
-      </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <Card className="h-96">
-          <h3 className="mb-4 text-sm font-medium text-slate-400">Cost Trend</h3>
-          <div className="h-[calc(100%-2rem)] w-full">
-            <CostChart data={analytics?.monthlyData} />
+        <Card className="relative overflow-hidden">
+          <div className="flex items-start justify-between">
+            <div>
+              <div className="flex items-center gap-2">
+                <div className="rounded-full bg-green-500/10 p-2">
+                  <TrendingDown className="h-4 w-4 text-green-500" />
+                </div>
+                <h3 className="text-sm font-medium text-slate-400">Savings Achieved</h3>
+              </div>
+              <p className="mt-3 text-3xl font-bold text-green-500">
+                {loading ? "..." : formatCurrency(analytics?.totalSavings || 0)}
+              </p>
+              <div className="mt-2 flex items-center gap-2">
+                {!loading && analytics?.savingsTrend !== undefined && (
+                  <TrendIndicator value={analytics.savingsTrend} />
+                )}
+                <span className="text-xs text-slate-500">from optimizations</span>
+              </div>
+            </div>
           </div>
         </Card>
-        <Card className="h-96 overflow-y-auto">
-          <TaskList key={taskListKey} />
+
+        <Card className="relative overflow-hidden">
+          <div className="flex items-start justify-between">
+            <div className="w-full">
+              <div className="flex items-center gap-2">
+                <div className="rounded-full bg-yellow-500/10 p-2">
+                  <Wallet className="h-4 w-4 text-yellow-500" />
+                </div>
+                <h3 className="text-sm font-medium text-slate-400">Potential Savings</h3>
+              </div>
+              <p className="mt-3 text-3xl font-bold text-yellow-500">
+                {loading ? "..." : formatCurrency(analytics?.pendingSavings || 0)}
+              </p>
+              <div className="mt-2">
+                <Badge variant="warning" className="text-xs">
+                  {analytics?.expenseCount || 0} opportunities
+                </Badge>
+              </div>
+            </div>
+          </div>
         </Card>
+
+        <Card className="relative overflow-hidden">
+          <div className="flex items-start justify-between">
+            <div className="w-full">
+              <div className="flex items-center gap-2">
+                <div className="rounded-full bg-accent/10 p-2">
+                  <Target className="h-4 w-4 text-accent" />
+                </div>
+                <h3 className="text-sm font-medium text-slate-400">Budget Status</h3>
+              </div>
+              <p className={`mt-3 text-3xl font-bold ${getBudgetColor()}`}>
+                {loading ? "..." : `${analytics?.budget?.percentage?.toFixed(1) || 0}%`}
+              </p>
+              <div className="mt-3 space-y-1">
+                <Progress
+                  value={analytics?.budget?.percentage || 0}
+                  className="h-2"
+                />
+                <p className="text-xs text-slate-500">
+                  {loading ? "..." : `${formatCurrency(analytics?.budget?.used || 0)} / ${formatCurrency(analytics?.budget?.total || 0)}`}
+                </p>
+              </div>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="lg:col-span-2 space-y-6">
+          <Card className="h-96">
+            <h3 className="mb-4 text-sm font-medium text-slate-400">Cost Trend</h3>
+            <div className="h-[calc(100%-2rem)] w-full">
+              <CostChart data={analytics?.monthlyData} />
+            </div>
+          </Card>
+
+          <TopServices services={analytics?.topServices || []} loading={loading} />
+        </div>
+
+        <div className="space-y-6">
+          <QuickActions onAnalyzeCosts={handleAnalyzeCosts} analyzing={analyzing} />
+
+          <Card className="max-h-96 overflow-y-auto">
+            <TaskList key={taskListKey} />
+          </Card>
+        </div>
       </div>
     </div>
   );

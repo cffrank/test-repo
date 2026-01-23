@@ -43,12 +43,62 @@ export async function GET(request: Request) {
         cost: Number(amount.toFixed(2)),
       }));
 
+    // Calculate trends (comparing current period to previous period)
+    const currentPeriodTotal = sortedMonthly.slice(-3).reduce((sum, m) => sum + m.cost, 0);
+    const previousPeriodTotal = sortedMonthly.slice(-6, -3).reduce((sum, m) => sum + m.cost, 0);
+    const spendTrend = previousPeriodTotal > 0
+      ? ((currentPeriodTotal - previousPeriodTotal) / previousPeriodTotal) * 100
+      : 0;
+
+    const currentSavings = totalSavings;
+    const previousSavings = tasks
+      .filter((t) => t.status === "completed" && t.createdAt)
+      .slice(0, Math.floor(tasks.length / 2))
+      .reduce((sum, task) => sum + Number(task.savings || 0), 0);
+    const savingsTrend = previousSavings > 0
+      ? ((currentSavings - previousSavings) / previousSavings) * 100
+      : 0;
+
+    // Calculate sparkline data (last 12 months)
+    const sparklineData = sortedMonthly.slice(-12).map(m => m.cost);
+
+    // Group expenses by service
+    const serviceData = expenses.reduce((acc: Record<string, number>, exp) => {
+      const service = exp.service || "Other";
+      if (!acc[service]) acc[service] = 0;
+      acc[service] += Number(exp.amount);
+      return acc;
+    }, {});
+
+    // Calculate top services with percentages
+    const topServices = Object.entries(serviceData)
+      .map(([name, amount]) => ({
+        name,
+        amount: Number(amount.toFixed(2)),
+        percentage: (amount / totalSpend) * 100,
+      }))
+      .sort((a, b) => b.amount - a.amount);
+
+    // Calculate budget data (example: 30k budget)
+    const budgetTotal = 30000;
+    const budgetUsed = totalSpend;
+    const budgetPercentage = Math.min((budgetUsed / budgetTotal) * 100, 100);
+
     return NextResponse.json({
       totalSpend: Number(totalSpend.toFixed(2)),
       totalSavings: Number(totalSavings.toFixed(2)),
       pendingSavings: Number(pendingSavings.toFixed(2)),
       monthlyData: sortedMonthly,
       expenseCount: expenses.length,
+      spendTrend,
+      savingsTrend,
+      sparklineData,
+      topServices,
+      budget: {
+        total: budgetTotal,
+        used: Number(budgetUsed.toFixed(2)),
+        percentage: Number(budgetPercentage.toFixed(2)),
+      },
     });
   } catch (error: any) {
     console.error("Error fetching analytics:", error);
