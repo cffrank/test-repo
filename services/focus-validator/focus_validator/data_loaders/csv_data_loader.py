@@ -115,12 +115,14 @@ class CSVDataLoader:
                 try_parse_dates=bool(parse_dates_list),
                 infer_schema_length=10000,  # Increased inference length
                 null_values=[
+                    "",  # Empty strings should be null
                     "INVALID",
                     "INVALID_COST",
                     "BAD_DATE",
                     "INVALID_DECIMAL",
                     "INVALID_INT",
                     "NULL",
+                    "null",
                 ],  # Common invalid values
             )
 
@@ -173,12 +175,14 @@ class CSVDataLoader:
                 filename_or_buffer,
                 infer_schema_length=10000,
                 null_values=[
+                    "",
                     "INVALID",
                     "INVALID_COST",
                     "BAD_DATE",
                     "INVALID_DECIMAL",
                     "INVALID_INT",
                     "NULL",
+                    "null",
                 ],
             )
 
@@ -527,12 +531,14 @@ class CSVDataLoader:
                         truncate_ragged_lines=True,
                         ignore_errors=True,
                         null_values=[
+                            "",
                             "INVALID",
                             "INVALID_COST",
                             "BAD_DATE",
                             "INVALID_DECIMAL",
                             "INVALID_INT",
                             "NULL",
+                            "null",
                         ],
                     )
             else:
@@ -548,12 +554,14 @@ class CSVDataLoader:
                         truncate_ragged_lines=True,  # Handle inconsistent column counts
                         ignore_errors=True,  # Skip problematic rows
                         null_values=[
+                            "",
                             "INVALID",
                             "INVALID_COST",
                             "BAD_DATE",
                             "INVALID_DECIMAL",
                             "INVALID_INT",
                             "NULL",
+                            "null",
                         ],
                     )
 

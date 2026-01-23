@@ -3092,8 +3092,26 @@ class FocusToDuckDBSchemaConverter:
             return None
 
         fn = spec.get("CheckFunction")
+
+        # Handle shorthand syntax: {"AND": [...]} or {"OR": [...]}
+        # Also handle single-object shorthand: {"AND": {...}} -> {"AND": [{...}]}
         if not fn:
-            return None
+            if "AND" in spec:
+                fn = "AND"
+                items = spec["AND"]
+                # Handle single object (not array) shorthand
+                if isinstance(items, dict):
+                    items = [items]
+                spec = {"CheckFunction": "AND", "Items": items}
+            elif "OR" in spec:
+                fn = "OR"
+                items = spec["OR"]
+                # Handle single object (not array) shorthand
+                if isinstance(items, dict):
+                    items = [items]
+                spec = {"CheckFunction": "OR", "Items": items}
+            else:
+                return None
 
         # Composites (reuse your composite names)
         if fn == "AND":
