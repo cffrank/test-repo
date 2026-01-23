@@ -7,11 +7,11 @@ export interface OptimizationTask {
 }
 
 interface CostRecord {
-  amount: number;
-  service: string;
-  date: string;
+  amount: string | number;
+  service: string | null;
+  date: Date | string;
   category?: string;
-  region?: string;
+  region?: string | null;
   [key: string]: unknown;
 }
 

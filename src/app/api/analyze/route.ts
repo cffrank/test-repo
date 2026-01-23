@@ -6,7 +6,7 @@ import { analyzeCostDataWithCerebras } from "@/lib/ai/cerebras";
 export const runtime = 'edge';
 
 export async function POST(req: NextRequest) {
-    const auth = neonAuth(req);
+    const auth = neonAuth();
     const user = await auth.user();
 
     if (!user) {
