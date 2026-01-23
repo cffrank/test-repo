@@ -1,6 +1,4 @@
-name = "finops-mvp"
-compatibility_date = "2024-01-01"
+name = "finops-59k"
+compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
-
-[[env.production]]
-name = "finops-mvp-prod"
+pages_build_output_dir = ".vercel/output/static"
