@@ -14,7 +14,7 @@ export default function SignInPage() {
         <div className="w-full max-w-md p-8">
           <SignInForm
             redirectTo="/dashboard"
-            onSuccess={() => router.push("/dashboard")}
+            localization={{}}
           />
         </div>
       </div>

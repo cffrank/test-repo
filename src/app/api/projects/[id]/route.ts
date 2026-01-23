@@ -2,7 +2,10 @@ import { neonAuth } from "@/lib/auth/server";
 import { getProjectById, updateProject, deleteProject } from "@/lib/db/queries";
 import { NextResponse } from "next/server";
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
   const auth = neonAuth(request);
   const user = await auth.user();
 
@@ -11,7 +14,8 @@ export async function GET(request: Request, { params }: { params: { id: string }
   }
 
   try {
-    const project = await getProjectById(params.id, user.id);
+    const { id } = await params;
+    const project = await getProjectById(id);
 
     if (!project) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
@@ -24,7 +28,10 @@ export async function GET(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
   const auth = neonAuth(request);
   const user = await auth.user();
 
@@ -33,14 +40,15 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   }
 
   try {
+    const { id } = await params;
     const body = await request.json();
     const { name, description, currency } = body;
 
-    const project = await updateProject(params.id, user.id, {
+    await updateProject(id, {
       name,
       description,
-      currency,
     });
+    const project = await getProjectById(id);
 
     if (!project) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
@@ -53,7 +61,10 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
   const auth = neonAuth(request);
   const user = await auth.user();
 
@@ -62,7 +73,9 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
   }
 
   try {
-    const success = await deleteProject(params.id, user.id);
+    const { id } = await params;
+    await deleteProject(id);
+    const success = true;
 
     if (!success) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 });

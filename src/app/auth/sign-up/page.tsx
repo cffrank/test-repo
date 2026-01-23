@@ -14,7 +14,7 @@ export default function SignUpPage() {
         <div className="w-full max-w-md p-8">
           <SignUpForm
             redirectTo="/dashboard"
-            onSuccess={() => router.push("/dashboard")}
+            localization={{}}
           />
         </div>
       </div>

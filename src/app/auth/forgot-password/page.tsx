@@ -9,7 +9,7 @@ export default function ForgotPasswordPage() {
     <NeonAuthUIProvider authClient={authClient}>
       <div className="flex items-center justify-center min-h-screen bg-slate-900">
         <div className="w-full max-w-md p-8">
-          <ForgotPasswordForm />
+          <ForgotPasswordForm localization={{}} />
         </div>
       </div>
     </NeonAuthUIProvider>

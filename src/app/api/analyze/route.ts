@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
                 projectId,
                 title: rec.title,
                 description: rec.description,
-                savings: parseFloat(rec.savings.replace(/[^0-9.]/g, "")) || 0,
+                savings: rec.savings || "0",
                 effort: rec.effort,
                 priority: rec.priority,
                 status: "pending",

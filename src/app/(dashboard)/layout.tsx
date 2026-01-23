@@ -9,11 +9,11 @@ export default function DashboardLayout({
 }) {
     return (
         <ProtectedRoute>
-            <div className="min-h-screen bg-slate-950">
+            <div className="min-h-screen bg-surface font-montserrat">
                 <Sidebar />
                 <Header />
-                <main className="ml-64 pt-16">
-                    <div className="p-8">
+                <main className="ml-64 pt-14">
+                    <div className="p-4 md:p-6">
                         {children}
                     </div>
                 </main>

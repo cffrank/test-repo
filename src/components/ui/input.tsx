@@ -11,15 +11,15 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         return (
             <div className="w-full">
                 {label && (
-                    <label className="mb-1.5 block text-sm font-medium text-slate-300">
+                    <label className="mb-1.5 block text-sm font-medium text-primary">
                         {label}
                     </label>
                 )}
                 <input
                     ref={ref}
                     className={twMerge(
-                        "w-full rounded-lg border border-slate-700 bg-slate-900/50 px-4 py-2 text-white placeholder-slate-500 transition-colors focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500 disabled:opacity-50",
-                        error && "border-red-500 focus:border-red-500 focus:ring-red-500",
+                        "flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm text-primary ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+                        error && "border-red-500 focus-visible:ring-red-500",
                         className
                     )}
                     {...props}
@@ -30,3 +30,25 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     }
 );
 Input.displayName = "Input";
+
+interface LabelProps extends React.LabelHTMLAttributes<HTMLLabelElement> {
+    children: React.ReactNode;
+}
+
+export const Label = React.forwardRef<HTMLLabelElement, LabelProps>(
+    ({ className, children, ...props }, ref) => {
+        return (
+            <label
+                ref={ref}
+                className={twMerge(
+                    "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
+                    className
+                )}
+                {...props}
+            >
+                {children}
+            </label>
+        );
+    }
+);
+Label.displayName = "Label";
