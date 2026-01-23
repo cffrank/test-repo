@@ -2,6 +2,8 @@ import { neonAuth } from "@/lib/auth/server";
 import { getProjectById, updateProject, deleteProject } from "@/lib/db/queries";
 import { NextResponse } from "next/server";
 
+export const runtime = 'edge';
+
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }

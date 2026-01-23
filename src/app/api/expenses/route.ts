@@ -2,6 +2,8 @@ import { neonAuth } from "@/lib/auth/server";
 import { getExpenses, createExpenses } from "@/lib/db/queries";
 import { NextResponse } from "next/server";
 
+export const runtime = 'edge';
+
 export async function GET(request: Request) {
   const auth = neonAuth(request);
   const user = await auth.user();

@@ -3,6 +3,8 @@ import { neonAuth } from "@/lib/auth/server";
 import { getExpenses, createOptimizationTask } from "@/lib/db/queries";
 import { analyzeCostDataWithCerebras } from "@/lib/ai/cerebras";
 
+export const runtime = 'edge';
+
 export async function POST(req: NextRequest) {
     const auth = neonAuth(req);
     const user = await auth.user();
