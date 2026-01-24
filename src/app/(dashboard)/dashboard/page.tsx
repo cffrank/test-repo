@@ -9,7 +9,6 @@ import { TaskList } from "@/components/dashboard/TaskList";
 import { Sparkline } from "@/components/dashboard/Sparkline";
 import { TrendIndicator } from "@/components/dashboard/TrendIndicator";
 import { TopServices } from "@/components/dashboard/TopServices";
-import { QuickActions } from "@/components/dashboard/QuickActions";
 import { useAuth } from "@/context/AuthContext";
 import { DollarSign, TrendingDown, Target, Wallet } from "lucide-react";
 
@@ -216,9 +215,24 @@ export default function DashboardPage() {
         </div>
 
         <div className="space-y-6">
-          <QuickActions onAnalyzeCosts={handleAnalyzeCosts} analyzing={analyzing} />
-
           <Card className="max-h-96 overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-medium text-slate-400">Optimization Tasks</h3>
+              <button
+                onClick={handleAnalyzeCosts}
+                disabled={analyzing}
+                className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-white bg-accent hover:bg-accent/90 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {analyzing ? (
+                  <>
+                    <span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Analyzing...
+                  </>
+                ) : (
+                  "Analyze Costs"
+                )}
+              </button>
+            </div>
             <TaskList key={taskListKey} />
           </Card>
         </div>
