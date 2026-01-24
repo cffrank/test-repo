@@ -36,7 +36,8 @@ export default function UploadPage() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const validatorUrl = process.env.NEXT_PUBLIC_VALIDATOR_URL || "http://localhost:8000";
+  // Use local API proxy to avoid CORS issues
+  const validatorUrl = "/api";
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
