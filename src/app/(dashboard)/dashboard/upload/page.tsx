@@ -36,8 +36,8 @@ export default function UploadPage() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Use local API proxy to avoid CORS issues
-  const validatorUrl = "/api";
+  // Call Railway validator directly (CORS enabled on Railway)
+  const validatorUrl = process.env.NEXT_PUBLIC_VALIDATOR_URL || "https://finops-focus-service-production.up.railway.app";
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
