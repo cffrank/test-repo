@@ -27,6 +27,7 @@ const eslintConfig = defineConfig([
     // Additional ignores:
     "website/.next/**",
     ".vercel/**",
+    ".wrangler/**",
   ]),
 ]);
 
