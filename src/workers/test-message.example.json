@@ -1,0 +1,7 @@
+{
+  "jobId": "example-job-123",
+  "chunkIndex": 0,
+  "totalChunks": 5,
+  "userId": "user-456",
+  "projectId": "project-789"
+}

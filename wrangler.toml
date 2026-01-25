@@ -2,3 +2,22 @@ name = "finops-59k"
 compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = ".vercel/output/static"
+
+# =============================================================================
+# Large File Upload Queue System Configuration
+# =============================================================================
+
+# R2 Storage for file uploads
+[[r2_buckets]]
+binding = "UPLOADS_BUCKET"
+bucket_name = "finops-uploads"
+
+# Queue for file processing jobs (producer only - consumer is separate worker)
+[[queues.producers]]
+binding = "FILE_QUEUE"
+queue = "file-processing"
+
+# KV namespace for job status tracking
+[[kv_namespaces]]
+binding = "JOB_STATUS"
+id = "1bfcac9914fc4b70a08f958b9401a16f"
