@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build --webpack",
+    "build:cf": "npx vercel build && npx @cloudflare/next-on-pages --skip-build",
+    "deploy": "npm run build:cf && npx wrangler pages deploy .vercel/output/static --project-name finops-59k",
     "start": "next start",
     "lint": "eslint",
     "test": "vitest"
